@@ -77,7 +77,7 @@ router.get("/:id", (req, res, next) => {
 });
 
 // Add new product
-router.post("", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   const newProduct = {
     name: req.body.name,
     description: req.body.description,
@@ -86,12 +86,26 @@ router.post("", async (req, res, next) => {
   };
 
   try {
-    const insertionResult = await insertionHandler(
-      "shop",
-      "products",
-      newProduct
-    );
-    return insertionResult;
+    const result = await insertionHandler("shop", "products", newProduct);
+
+    res.status(201).json({
+      message: "Product added successfully",
+      productId: result.insertedId,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/bulk", async (req, res, next) => {
+  try {
+    const products = req.body;
+    const result = await insertionHandler("shop", "products", products);
+
+    res.status(201).json({
+      message: `${result.insertedCount} products added`,
+      insertedIds: result.insertedIds,
+    });
   } catch (error) {
     next(error);
   }
