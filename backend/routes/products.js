@@ -35,8 +35,9 @@ router.get("/:id", async (req, res, next) => {
       .db()
       .collection("products")
       .findOne({ _id: productId })
-      .then((result) => {
-        res.json(result);
+      .then((productResult) => {
+        productResult.price = productResult.price.toString();
+        res.status(200).json(result);
       });
   } catch (err) {
     res.status(404).json({
